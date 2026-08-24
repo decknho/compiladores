@@ -292,13 +292,20 @@ class Parser:
             "ainda não é suportada pelo Parser."
         )
 
+        # IF
         if token["token"] == "IF":
             self.consumir()
 
+            # Lê a condição do if
             condicao = self.expressao()
+
+            # Lê o bloco/expressão do THEN
             entao = self.expressao()
+
+            # Lê o bloco/expressão do ELSE
             senao = self.expressao()
 
+            # Verifica o fechamento do if
             if self.atual() is None:
                 self.erro(
                     "Fim de arquivo inesperado. "
@@ -318,12 +325,17 @@ class Parser:
                 senao
             )
 
+        # WHILE
         if token["token"] == "WHILE":
             self.consumir()
 
+            # Lê a condição do while
             condicao = self.expressao()
+
+            # Lê o corpo do while
             corpo = self.expressao()
 
+            # Verifica o fechamento do while
             if self.atual() is None:
                 self.erro(
                     "Fim de arquivo inesperado. "
