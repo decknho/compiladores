@@ -2,7 +2,11 @@ from lexer import lexer
 from parser import Parser
 
 
-codigo = "(+ 10 20)"
+codigo = """
+(if (> idade 18)
+    (print 1)
+)
+"""
 
 tokens = lexer(codigo)
 
