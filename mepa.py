@@ -71,3 +71,17 @@ class GeradorMEPA:
 
             for expressao in no.expressoes:
                 self.gerar_no(expressao)
+
+        # SET
+        elif no.__class__.__name__ == "Set":
+
+            # Gera o valor que será armazenado
+            self.gerar_no(no.expressao)
+
+            # Busca a variável na tabela
+            simbolo = self.tabela[no.nome]
+
+            # Armazena no endereço MEPA
+            self.emitir(
+                f"ARMZ {simbolo.endereco}"
+            )

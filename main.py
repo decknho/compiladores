@@ -4,7 +4,12 @@ from semantic import AnalisadorSemantico
 from mepa import GeradorMEPA
 
 
-codigo = "(print (+ 10 20))"
+codigo = """
+(begin
+    (set idade 20)
+    (print idade)
+)
+"""
 
 
 # 1. Análise léxica
