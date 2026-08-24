@@ -8,11 +8,10 @@ from mepa import GeradorMEPA
 
 def compilar(arquivo):
     try:
-        # LEITURA DO ARQUIVO
         with open(arquivo, "r", encoding="utf-8") as f:
             codigo = f.read()
 
-        # ANÁLISE LÉXICA
+        # Análise léxica
         tokens = lexer(codigo)
 
         print("\n=== TOKENS / LEXEMAS ===")
@@ -24,11 +23,11 @@ def compilar(arquivo):
                 f"linha {token['linha']}"
             )
 
-        # ANÁLISE SINTÁTICA
+        # Análise sintática
         parser = Parser(tokens)
         arvore = parser.analisar()
 
-        # ANÁLISE SEMÂNTICA
+        # Análise semântica
         semantico = AnalisadorSemantico()
         tabela = semantico.analisar(arvore)
 
@@ -52,7 +51,7 @@ def compilar(arquivo):
                     f"{simbolo.escopo}"
                 )
 
-        # GERAÇÃO MEPA
+        # Geração MEPA
         gerador = GeradorMEPA(tabela)
         codigo_mepa = gerador.gerar(arvore)
 
@@ -68,9 +67,7 @@ def compilar(arquivo):
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
-        print(
-            "Uso: python main.py <arquivo.lisp>"
-        )
+        print("Uso: python main.py <arquivo.lisp>")
         sys.exit(1)
 
     compilar(sys.argv[1])
