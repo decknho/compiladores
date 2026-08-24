@@ -1,33 +1,32 @@
 from lexer import lexer
 from parser import Parser
 from semantic import AnalisadorSemantico
+from mepa import GeradorMEPA
 
 
-codigo = """
-(begin
-    (set idade 20)
-    (print salario)
-)
-"""
+codigo = "(print (+ 10 20))"
 
+
+# 1. Análise léxica
 tokens = lexer(codigo)
 
-parser = Parser(tokens)
 
+# 2. Análise sintática
+parser = Parser(tokens)
 arvore = parser.analisar()
 
-analisador = AnalisadorSemantico()
 
-tabela = analisador.analisar(arvore)
+# 3. Análise semântica
+semantico = AnalisadorSemantico()
+tabela = semantico.analisar(arvore)
 
-print("\nTabela de Símbolos:")
-print("Identificador | Endereço MEPA | Tipo | Escopo")
-print("-" * 50)
 
-for simbolo in tabela.values():
-    print(
-        f"{simbolo.nome:<13} | "
-        f"{simbolo.endereco:<13} | "
-        f"{simbolo.tipo:<6} | "
-        f"{simbolo.escopo}"
-    )
+# 4. Geração MEPA
+gerador = GeradorMEPA(tabela)
+
+codigo_mepa = gerador.gerar(arvore)
+
+
+print("\nCódigo MEPA:")
+for instrucao in codigo_mepa:
+    print(instrucao)
