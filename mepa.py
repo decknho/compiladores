@@ -47,7 +47,14 @@ class GeradorMEPA:
                 "+": "SOMA",
                 "-": "SUBT",
                 "*": "MULT",
-                "/": "DIVI"
+                "/": "DIVI",
+
+                ">": "CMMA",
+                "<": "CMME",
+                ">=": "CMEG",
+                "<=": "CMLE",
+                "==": "CMIG",
+                "!=": "CMDG"
             }
 
             instrucao = operadores.get(no.operador)
