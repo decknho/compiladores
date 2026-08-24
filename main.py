@@ -3,8 +3,14 @@ from parser import Parser
 
 
 codigo = """
-(if (> idade 18)
-    (print 1)
+(begin
+    (set contador 1)
+    (while (<= contador 10)
+        (begin
+            (print contador)
+            (set contador (+ contador 1))
+        )
+    )
 )
 """
 

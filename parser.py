@@ -1,3 +1,28 @@
+class If:
+    def __init__(self, condicao, entao, senao):
+        self.condicao = condicao
+        self.entao = entao
+        self.senao = senao
+
+    def __repr__(self):
+        return (
+            f"If({self.condicao}, "
+            f"{self.entao}, {self.senao})"
+        )
+
+
+class While:
+    def __init__(self, condicao, corpo):
+        self.condicao = condicao
+        self.corpo = corpo
+
+    def __repr__(self):
+        return (
+            f"While({self.condicao}, "
+            f"{self.corpo})"
+        )
+
+
 class Numero:
     def __init__(self, valor):
         self.valor = valor
@@ -50,31 +75,6 @@ class Begin:
 
     def __repr__(self):
         return f"Begin({self.expressoes})"
-
-class If:
-    def __init__(self, condicao, entao, senao):
-        self.condicao = condicao
-        self.entao = entao
-        self.senao = senao
-
-    def __repr__(self):
-        return (
-            f"If({self.condicao}, "
-            f"{self.entao}, {self.senao})"
-        )
-
-
-class While:
-    def __init__(self, condicao, corpo):
-        self.condicao = condicao
-        self.corpo = corpo
-
-    def __repr__(self):
-        return (
-            f"While({self.condicao}, "
-            f"{self.corpo})"
-        )
-
 
 class Parser:
 
@@ -173,7 +173,6 @@ class Parser:
             )
 
         # PRINT
-
         if token["token"] == "PRINT":
             self.consumir()
 
@@ -257,41 +256,6 @@ class Parser:
                 "Esperava-se ')'."
             )
 
-        # OPERAÇÕES
-        if token["token"] == "OP":
-
-            operador = self.consumir()["lexema"]
-
-            esquerda = self.expressao()
-
-            direita = self.expressao()
-
-            if self.atual() is None:
-                self.erro(
-                    "Fim de arquivo inesperado. "
-                    "Esperava-se ')'."
-                )
-
-            if self.atual()["token"] != "RPAR":
-                self.erro(
-                    "Operação deve possuir "
-                    "exatamente dois operandos."
-                )
-
-            self.consumir()
-
-            return Operacao(
-                operador,
-                esquerda,
-                direita
-            )
-
-        # CONSTRUÇÃO NÃO RECONHECIDA
-        self.erro(
-            f"Construção '{token['lexema']}' "
-            "ainda não é suportada pelo Parser."
-        )
-
         # IF
         if token["token"] == "IF":
             self.consumir()
@@ -353,3 +317,38 @@ class Parser:
                 condicao,
                 corpo
             )
+
+        # OPERAÇÕES
+        if token["token"] == "OP":
+
+            operador = self.consumir()["lexema"]
+
+            esquerda = self.expressao()
+
+            direita = self.expressao()
+
+            if self.atual() is None:
+                self.erro(
+                    "Fim de arquivo inesperado. "
+                    "Esperava-se ')'."
+                )
+
+            if self.atual()["token"] != "RPAR":
+                self.erro(
+                    "Operação deve possuir "
+                    "exatamente dois operandos."
+                )
+
+            self.consumir()
+
+            return Operacao(
+                operador,
+                esquerda,
+                direita
+            )
+
+        # CONSTRUÇÃO NÃO RECONHECIDA
+        self.erro(
+            f"Construção '{token['lexema']}' "
+            "ainda não é suportada pelo Parser."
+        )
