@@ -1,105 +1,9 @@
-class Parser:
-    def __init__(self, tokens):
-        self.tokens = tokens
-        self.posicao = 0
-
-    def atual(self):
-        """Retorna o token atual sem avançar."""
-        if self.posicao < len(self.tokens):
-            return self.tokens[self.posicao]
-
-        return None
-
-    def consumir(self):
-        """Consome o token atual e avança para o próximo."""
-        token = self.atual()
-
-        if token is not None:
-            self.posicao += 1
-
-        return token
-
-    def analisar(self):
-        """Inicia a análise sintática do programa."""
-        arvore = self.expressao()
-
-        # Se ainda existem tokens, significa que
-        # encontramos mais de uma expressão no programa.
-        if self.atual() is not None:
-            token = self.atual()
-
-            raise Exception(
-                f"Erro Sintático: token inesperado "
-                f"'{token['lexema']}' na linha {token['linha']}."
-            )
-
-        return arvore
-
-    def expressao(self):
-        """Analisa uma expressão."""
-
-        token = self.atual()
-
-        if token is None:
-            raise Exception(
-                "Erro Sintático: expressão inesperadamente vazia."
-            )
-
-        # Se começar com (, temos uma lista.
-        if token["token"] == "LPAR":
-            return self.lista()
-
-        # Caso contrário, temos um átomo.
-        if token["token"] in [
-            "INTEGER",
-            "FLOAT",
-            "ID",
-            "OP",
-            "IF",
-            "WHILE",
-            "BEGIN",
-            "SET",
-            "PRINT"
-        ]:
-            return self.consumir()
-
-        raise Exception(
-            f"Erro Sintático: token inesperado "
-            f"'{token['lexema']}' na linha {token['linha']}."
-        )
-
-    def lista(self):
-        """Analisa uma expressão entre parênteses."""
-
-        # Consome o '('
-        self.consumir()
-
-        elementos = []
-
-        while True:
-            token = self.atual()
-
-            # Acabou o arquivo antes do ')'
-            if token is None:
-                raise Exception(
-                    "Erro Sintático: Fim de arquivo inesperado. "
-                    "Esperava-se ')'."
-                )
-
-            # Encontrou o ')'
-            if token["token"] == "RPAR":
-                self.consumir()
-                break
-
-            # Analisa o próximo elemento
-            elementos.append(self.expressao())
-
-        return elementos
-
-
 class Numero:
     def __init__(self, valor):
         self.valor = valor
+
+    def __repr__(self):
+        return f"Numero({self.valor})"
 
 
 class Operacao:
@@ -108,7 +12,143 @@ class Operacao:
         self.esquerda = esquerda
         self.direita = direita
 
+    def __repr__(self):
+        return (
+            f"Operacao('{self.operador}', "
+            f"{self.esquerda}, {self.direita})"
+        )
+
 
 class Print:
     def __init__(self, expressao):
         self.expressao = expressao
+
+    def __repr__(self):
+        return f"Print({self.expressao})"
+
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.posicao = 0
+
+    def atual(self):
+        if self.posicao < len(self.tokens):
+            return self.tokens[self.posicao]
+
+        return None
+
+    def consumir(self):
+        token = self.atual()
+
+        if token is not None:
+            self.posicao += 1
+
+        return token
+
+    def erro(self, mensagem):
+        token = self.atual()
+
+        if token:
+            raise Exception(
+                f"Erro Sintático na linha "
+                f"{token['linha']}: {mensagem}"
+            )
+
+        raise Exception(f"Erro Sintático: {mensagem}")
+
+    def analisar(self):
+        arvore = self.expressao()
+
+        if self.atual() is not None:
+            self.erro(
+                f"Token inesperado '{self.atual()['lexema']}'."
+            )
+
+        return arvore
+
+    def expressao(self):
+        token = self.atual()
+
+        if token is None:
+            self.erro("Expressão inesperadamente vazia.")
+
+        if token["token"] == "INTEGER":
+            self.consumir()
+            return Numero(int(token["lexema"]))
+
+        if token["token"] == "FLOAT":
+            self.consumir()
+            return Numero(float(token["lexema"]))
+
+        if token["token"] == "LPAR":
+            return self.lista()
+
+        self.erro(
+            f"Token '{token['lexema']}' não pode iniciar "
+            f"uma expressão."
+        )
+
+    def lista(self):
+        self.consumir()  # (
+
+        token = self.atual()
+
+        if token is None:
+            self.erro(
+                "Fim de arquivo inesperado. "
+                "Esperava-se ')'."
+            )
+
+        # print
+        if token["token"] == "PRINT":
+            self.consumir()
+
+            expressao = self.expressao()
+
+            if self.atual() is None:
+                self.erro(
+                    "Fim de arquivo inesperado. "
+                    "Esperava-se ')'."
+                )
+
+            if self.atual()["token"] != "RPAR":
+                self.erro(
+                    "Esperava-se ')' após o argumento de print."
+                )
+
+            self.consumir()
+
+            return Print(expressao)
+
+        # operações
+        if token["token"] == "OP":
+            operador = self.consumir()["lexema"]
+
+            esquerda = self.expressao()
+            direita = self.expressao()
+
+            if self.atual() is None:
+                self.erro(
+                    "Fim de arquivo inesperado. "
+                    "Esperava-se ')'."
+                )
+
+            if self.atual()["token"] != "RPAR":
+                self.erro(
+                    "Operação deve possuir exatamente "
+                    "dois operandos."
+                )
+
+            self.consumir()
+
+            return Operacao(
+                operador,
+                esquerda,
+                direita
+            )
+
+        self.erro(
+            f"Construção '{token['lexema']}' ainda "
+            f"não é suportada pelo Parser."
+        )
