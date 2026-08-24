@@ -2,7 +2,7 @@ from lexer import lexer
 from parser import Parser
 
 
-codigo = "(print 10"
+codigo = "(+ 10 20)"
 
 tokens = lexer(codigo)
 
