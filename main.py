@@ -6,8 +6,7 @@ from semantic import AnalisadorSemantico
 codigo = """
 (begin
     (set idade 20)
-    (set nota 80)
-    (print idade)
+    (print salario)
 )
 """
 
