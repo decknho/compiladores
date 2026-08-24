@@ -1,4 +1,6 @@
 (begin
-    (set idade 20)
-    (print (+ idade 5))
+    (set preco 120)
+    (set desconto 25)
+    (print (- preco desconto))
+    (print (* desconto 2))
 )
