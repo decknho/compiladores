@@ -8,7 +8,22 @@ class GeradorMEPA:
         self.codigo.append(instrucao)
 
     def gerar(self, no):
-        """Gera código MEPA a partir da AST."""
+        """Gera o programa MEPA completo."""
+
+        self.codigo = []
+
+        # Início do programa
+        self.emitir("INPP")
+
+        # Gera as instruções da AST
+        self.gerar_no(no)
+
+        # Final do programa
+        self.emitir("PARA")
+
+        return self.codigo
+
+    def gerar_no(self, no):
 
         # NÚMERO
         if no.__class__.__name__ == "Numero":
@@ -16,7 +31,6 @@ class GeradorMEPA:
 
         # VARIÁVEL
         elif no.__class__.__name__ == "Variavel":
-
             simbolo = self.tabela[no.nome]
 
             self.emitir(
@@ -26,11 +40,8 @@ class GeradorMEPA:
         # OPERAÇÃO
         elif no.__class__.__name__ == "Operacao":
 
-            # Primeiro gera a expressão da esquerda
-            self.gerar(no.esquerda)
-
-            # Depois gera a expressão da direita
-            self.gerar(no.direita)
+            self.gerar_no(no.esquerda)
+            self.gerar_no(no.direita)
 
             operadores = {
                 "+": "SOMA",
@@ -52,14 +63,11 @@ class GeradorMEPA:
         # PRINT
         elif no.__class__.__name__ == "Print":
 
-            self.gerar(no.expressao)
-
+            self.gerar_no(no.expressao)
             self.emitir("IMPR")
 
         # BEGIN
         elif no.__class__.__name__ == "Begin":
 
             for expressao in no.expressoes:
-                self.gerar(expressao)
-
-        return self.codigo
+                self.gerar_no(expressao)
