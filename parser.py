@@ -95,3 +95,20 @@ class Parser:
             elementos.append(self.expressao())
 
         return elementos
+
+
+class Numero:
+    def __init__(self, valor):
+        self.valor = valor
+
+
+class Operacao:
+    def __init__(self, operador, esquerda, direita):
+        self.operador = operador
+        self.esquerda = esquerda
+        self.direita = direita
+
+
+class Print:
+    def __init__(self, expressao):
+        self.expressao = expressao
