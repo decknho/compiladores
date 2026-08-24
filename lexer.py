@@ -66,10 +66,3 @@ codigo = """
 """
 
 tokens = lexer(codigo)
-
-for token in tokens:
-    print(
-        f"{token['token']:<10}"
-        f"{token['lexema']:<10}"
-        f"linha {token['linha']}"
-    )
