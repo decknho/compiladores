@@ -51,6 +51,30 @@ class Begin:
     def __repr__(self):
         return f"Begin({self.expressoes})"
 
+class If:
+    def __init__(self, condicao, entao, senao):
+        self.condicao = condicao
+        self.entao = entao
+        self.senao = senao
+
+    def __repr__(self):
+        return (
+            f"If({self.condicao}, "
+            f"{self.entao}, {self.senao})"
+        )
+
+
+class While:
+    def __init__(self, condicao, corpo):
+        self.condicao = condicao
+        self.corpo = corpo
+
+    def __repr__(self):
+        return (
+            f"While({self.condicao}, "
+            f"{self.corpo})"
+        )
+
 
 class Parser:
 
@@ -267,3 +291,53 @@ class Parser:
             f"Construção '{token['lexema']}' "
             "ainda não é suportada pelo Parser."
         )
+
+        if token["token"] == "IF":
+            self.consumir()
+
+            condicao = self.expressao()
+            entao = self.expressao()
+            senao = self.expressao()
+
+            if self.atual() is None:
+                self.erro(
+                    "Fim de arquivo inesperado. "
+                    "Esperava-se ')'."
+                )
+
+            if self.atual()["token"] != "RPAR":
+                self.erro(
+                    "Estrutura 'if' malformada."
+                )
+
+            self.consumir()
+
+            return If(
+                condicao,
+                entao,
+                senao
+            )
+
+        if token["token"] == "WHILE":
+            self.consumir()
+
+            condicao = self.expressao()
+            corpo = self.expressao()
+
+            if self.atual() is None:
+                self.erro(
+                    "Fim de arquivo inesperado. "
+                    "Esperava-se ')'."
+                )
+
+            if self.atual()["token"] != "RPAR":
+                self.erro(
+                    "Estrutura 'while' malformada."
+                )
+
+            self.consumir()
+
+            return While(
+                condicao,
+                corpo
+            )
